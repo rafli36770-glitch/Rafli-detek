@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aldo Checker WS V2</title>
+    <style>
+        :root {
+            --bg: #0f172a;
+            --card-bg: #1e293b;
+            --border: #334155;
+            --text: #e2e8f0;
+            --text-muted: #94a3b8;
+            --accent: #3b82f6;
+        }
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+        .container {
+            width: 100%;
+            max-width: 480px;
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            padding: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        h2 { margin-top: 0; font-size: 20px; font-weight: 600; }
+        .stats-table {
+            width: 100%;
+            border-collapse: collapse;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+        .stats-table td {
+            padding: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+        .stats-table tr:last-child td { border-bottom: none; }
+        .stats-table td:first-child { width: 80%; }
+        .stats-table td:last-child {
+            text-align: center;
+            font-weight: bold;
+            border-left: 1px solid var(--border);
+            background-color: rgba(255, 255, 255, 0.02);
+        }
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin: 24px 0 12px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .note-title {
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .box {
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            overflow: hidden;
+            background-color: rgba(0, 0, 0, 0.2);
+        }
+        .box-header {
+            background-color: rgba(255, 255, 255, 0.05);
+            padding: 10px;
+            text-align: center;
+            font-size: 14px;
+            border-bottom: 1px solid var(--border);
+        }
+        .box-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px;
+            border-bottom: 1px solid var(--border);
+            font-family: monospace;
+            font-size: 14px;
+        }
+        .box-row:last-child { border-bottom: none; }
+        .cooldown-time { color: #fbbf24; } /* Kuning */
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Hᴀɪ, Aʟᴅᴏ Cʜᴇᴄᴋᴇʀ Wꜱ V2</h2>
+    
+    <table class="stats-table">
+        <tr><td>✅ Siap OTP</td><td>{{ data.stats.siap }}</td></tr>
+        <tr><td>🕐 Cooldown</td><td>{{ data.stats.cooldown }}</td></tr>
+        <tr><td>👎 Terbanned</td><td>{{ data.stats.banned }}</td></tr>
+        <tr><td>🔨 Tidak dapat OTP</td><td>{{ data.stats.no_otp }}</td></tr>
+        <tr><td>👥 Gak support clone</td><td>{{ data.stats.no_clone }}</td></tr>
+        <tr><td>⚠️ Ngambek</td><td>{{ data.stats.ngambek }}</td></tr>
+        <tr><td>⚠️ Error</td><td>{{ data.stats.error }}</td></tr>
+    </table>
+
+    <div class="note-title">
+        <span>⚠️</span> Catatan cooldown
+    </div>
+
+    <div class="section-title">✅ Nomor siap OTP</div>
+    <div class="box">
+        <div class="box-header">Nomor</div>
+        {% for n in data.ready %}
+        <div class="box-row">{{ n }}</div>
+        {% else %}
+        <div class="box-row" style="color: var(--text-muted);">- kosong -</div>
+        {% endfor %}
+    </div>
+
+    <div class="section-title">🕐 Nomor yang sedang cooldown</div>
+    <div class="box">
+        <div class="box-row" style="background-color: rgba(255, 255, 255, 0.05);">
+            <span>Nomor</span>
+            <span>Sisa</span>
+        </div>
+        {% for n, ts in data.cooldowns.items() %}
+        <div class="box-row">
+            <span>{{ n }}</span>
+            <span class="cooldown-time" data-ts="{{ ts }}">Menghitung...</span>
+        </div>
+        {% else %}
+        <div class="box-row" style="color: var(--text-muted);">- kosong -</div>
+        {% endfor %}
+    </div>
+</div>
+
+<script>
+    // Live Countdown Timer
+    function updateTimers() {
+        const now = Math.floor(Date.now() / 1000);
+        document.querySelectorAll('.cooldown-time').forEach(el => {
+            const endTs = parseFloat(el.getAttribute('data-ts'));
+            let remain = Math.max(0, Math.floor(endTs - now));
+            
+            if (remain <= 0) {
+                el.textContent = "Selesai";
+                el.style.color = "#10b981"; // Hijau
+                return;
+            }
+            
+            const j = Math.floor(remain / 3600);
+            const m = Math.floor((remain % 3600) / 60);
+            const s = remain % 60;
+            
+            let text = "";
+            if (j > 0) text += j + "j ";
+            if (m > 0 || j > 0) text += m + "m ";
+            text += s + "s";
+            
+            el.textContent = text;
+        });
+    }
+    
+    setInterval(updateTimers, 1000);
+    updateTimers();
+</script>
+
+</body>
+</html>
