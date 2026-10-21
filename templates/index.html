@@ -6,169 +6,158 @@
     <title>Aldo Checker WS V2</title>
     <style>
         :root {
-            --bg: #0f172a;
-            --card-bg: #1e293b;
-            --border: #334155;
-            --text: #e2e8f0;
-            --text-muted: #94a3b8;
-            --accent: #3b82f6;
+            --bg: #0f172a; --card-bg: #1e293b; --border: #334155;
+            --text: #e2e8f0; --text-muted: #94a3b8; --accent: #3b82f6;
         }
         body {
-            background-color: var(--bg);
-            color: var(--text);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
+            background-color: var(--bg); color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            margin: 0; padding: 20px; display: flex; justify-content: center;
         }
         .container {
-            width: 100%;
-            max-width: 480px;
-            background-color: var(--card-bg);
-            border-radius: 12px;
-            border: 1px solid var(--border);
-            padding: 20px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            width: 100%; max-width: 500px; background-color: var(--card-bg);
+            border-radius: 12px; border: 1px solid var(--border);
+            padding: 20px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
         h2 { margin-top: 0; font-size: 20px; font-weight: 600; }
+        textarea {
+            width: 100%; height: 100px; background: var(--bg); color: var(--text);
+            border: 1px solid var(--border); border-radius: 6px; padding: 10px;
+            font-family: monospace; font-size: 14px; box-sizing: border-box;
+            margin-bottom: 10px; resize: vertical;
+        }
+        button {
+            width: 100%; padding: 12px; background: var(--accent); color: white;
+            border: none; border-radius: 6px; font-weight: bold; cursor: pointer;
+            font-size: 16px; margin-bottom: 20px;
+        }
+        button:hover { background: #2563eb; }
         .stats-table {
-            width: 100%;
-            border-collapse: collapse;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            overflow: hidden;
-            margin-bottom: 20px;
+            width: 100%; border-collapse: collapse; border: 1px solid var(--border);
+            border-radius: 8px; overflow: hidden; margin-bottom: 20px;
         }
-        .stats-table td {
-            padding: 12px;
-            border-bottom: 1px solid var(--border);
-        }
+        .stats-table td { padding: 12px; border-bottom: 1px solid var(--border); }
         .stats-table tr:last-child td { border-bottom: none; }
-        .stats-table td:first-child { width: 80%; }
         .stats-table td:last-child {
-            text-align: center;
-            font-weight: bold;
-            border-left: 1px solid var(--border);
-            background-color: rgba(255, 255, 255, 0.02);
+            text-align: center; font-weight: bold;
+            border-left: 1px solid var(--border); background: rgba(255, 255, 255, 0.02);
         }
-        .section-title {
-            font-size: 16px;
-            font-weight: 600;
-            margin: 24px 0 12px 0;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .note-title {
-            font-size: 14px;
-            color: var(--text-muted);
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .box {
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            overflow: hidden;
-            background-color: rgba(0, 0, 0, 0.2);
-        }
-        .box-header {
-            background-color: rgba(255, 255, 255, 0.05);
-            padding: 10px;
-            text-align: center;
-            font-size: 14px;
-            border-bottom: 1px solid var(--border);
-        }
-        .box-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 12px;
-            border-bottom: 1px solid var(--border);
-            font-family: monospace;
-            font-size: 14px;
-        }
+        .section-title { font-size: 16px; font-weight: 600; margin: 24px 0 12px 0; display: flex; gap: 8px; }
+        .box { border: 1px solid var(--border); border-radius: 8px; overflow: hidden; background: rgba(0,0,0,0.2); margin-bottom: 20px; }
+        .box-header { background: rgba(255,255,255,0.05); padding: 10px; text-align: center; font-size: 14px; border-bottom: 1px solid var(--border); font-weight: bold;}
+        .box-row { display: flex; justify-content: space-between; padding: 12px; border-bottom: 1px solid var(--border); font-family: monospace; font-size: 14px; }
         .box-row:last-child { border-bottom: none; }
-        .cooldown-time { color: #fbbf24; } /* Kuning */
+        .status-tag { padding: 2px 6px; border-radius: 4px; font-size: 12px; font-family: sans-serif; }
+        .st-siap { background: #10b981; color: white; cursor: pointer; }
+        .st-cd { background: #f59e0b; color: white; }
+        .st-err { background: #ef4444; color: white; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>Hᴀɪ, Aʟᴅᴏ Cʜᴇᴄᴋᴇʀ Wꜱ V2</h2>
+    <h2>WhatsApp Mass Checker</h2>
     
+    <textarea id="phone-input" placeholder="+6281234567890&#10;+6289876543210&#10;+6281111222233"></textarea>
+    <button onclick="scan()">Cek 10 Nomor Sekaligus</button>
+
     <table class="stats-table">
-        <tr><td>✅ Siap OTP</td><td>{{ data.stats.siap }}</td></tr>
-        <tr><td>🕐 Cooldown</td><td>{{ data.stats.cooldown }}</td></tr>
-        <tr><td>👎 Terbanned</td><td>{{ data.stats.banned }}</td></tr>
-        <tr><td>🔨 Tidak dapat OTP</td><td>{{ data.stats.no_otp }}</td></tr>
-        <tr><td>👥 Gak support clone</td><td>{{ data.stats.no_clone }}</td></tr>
-        <tr><td>⚠️ Ngambek</td><td>{{ data.stats.ngambek }}</td></tr>
-        <tr><td>⚠️ Error</td><td>{{ data.stats.error }}</td></tr>
+        <tr><td>✅ Siap OTP</td><td id="st-siap">0</td></tr>
+        <tr><td>🕐 Cooldown</td><td id="st-cd">0</td></tr>
+        <tr><td>👎 Terbanned</td><td id="st-banned">0</td></tr>
+        <tr><td>🔨 Tidak dapat OTP</td><td id="st-no-otp">0</td></tr>
+        <tr><td>👥 Gak support clone</td><td id="st-no-clone">0</td></tr>
+        <tr><td>⚠️ Ngambek</td><td id="st-ngambek">0</td></tr>
+        <tr><td>⚠️ Error</td><td id="st-error">0</td></tr>
     </table>
 
-    <div class="note-title">
-        <span>⚠️</span> Catatan cooldown
-    </div>
-
-    <div class="section-title">✅ Nomor siap OTP</div>
+    <div class="section-title">📋 Hasil Deteksi</div>
     <div class="box">
-        <div class="box-header">Nomor</div>
-        {% for n in data.ready %}
-        <div class="box-row">{{ n }}</div>
-        {% else %}
-        <div class="box-row" style="color: var(--text-muted);">- kosong -</div>
-        {% endfor %}
-    </div>
-
-    <div class="section-title">🕐 Nomor yang sedang cooldown</div>
-    <div class="box">
-        <div class="box-row" style="background-color: rgba(255, 255, 255, 0.05);">
-            <span>Nomor</span>
-            <span>Sisa</span>
+        <div class="box-header" style="display: flex; justify-content: space-between;">
+            <span>Nomor</span><span>Status</span>
         </div>
-        {% for n, ts in data.cooldowns.items() %}
-        <div class="box-row">
-            <span>{{ n }}</span>
-            <span class="cooldown-time" data-ts="{{ ts }}">Menghitung...</span>
+        <div id="result-list">
+            <div class="box-row" style="color: var(--text-muted); justify-content: center;">Belum ada data. Masukkan nomor di atas.</div>
         </div>
-        {% else %}
-        <div class="box-row" style="color: var(--text-muted);">- kosong -</div>
-        {% endfor %}
     </div>
 </div>
 
 <script>
-    // Live Countdown Timer
-    function updateTimers() {
-        const now = Math.floor(Date.now() / 1000);
-        document.querySelectorAll('.cooldown-time').forEach(el => {
-            const endTs = parseFloat(el.getAttribute('data-ts'));
-            let remain = Math.max(0, Math.floor(endTs - now));
-            
-            if (remain <= 0) {
-                el.textContent = "Selesai";
-                el.style.color = "#10b981"; // Hijau
-                return;
-            }
-            
-            const j = Math.floor(remain / 3600);
-            const m = Math.floor((remain % 3600) / 60);
-            const s = remain % 60;
-            
-            let text = "";
-            if (j > 0) text += j + "j ";
-            if (m > 0 || j > 0) text += m + "m ";
-            text += s + "s";
-            
-            el.textContent = text;
-        });
+    function formatCD(sec) {
+        const j = Math.floor(sec / 3600);
+        const m = Math.floor((sec % 3600) / 60);
+        const s = Math.floor(sec % 60);
+        let t = "";
+        if (j > 0) t += j + "j ";
+        if (m > 0 || j > 0) t += m + "m ";
+        t += s + "s";
+        return t;
     }
-    
-    setInterval(updateTimers, 1000);
-    updateTimers();
-</script>
 
+    async function scan() {
+        const input = document.getElementById("phone-input").value;
+        const numbers = input.split("\n").map(n => n.trim()).filter(n => n);
+        
+        if (numbers.length === 0) return alert("Masukkan nomor dulu!");
+        
+        const btn = document.querySelector("button");
+        btn.innerText = "Memproses...";
+        btn.disabled = true;
+
+        try {
+            const res = await fetch("/api/scan", {
+                method: "POST",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({numbers: numbers})
+            });
+            const data = await res.json();
+            
+            // Update Stats
+            document.getElementById("st-siap").innerText = data.stats.siap;
+            document.getElementById("st-cd").innerText = data.stats.cooldown;
+            document.getElementById("st-banned").innerText = data.stats.banned;
+            document.getElementById("st-no-otp").innerText = data.stats.no_otp;
+            document.getElementById("st-no-clone").innerText = data.stats.no_clone;
+            document.getElementById("st-ngambek").innerText = data.stats.ngambek;
+            document.getElementById("st-error").innerText = data.stats.error;
+
+            // Render List
+            const list = document.getElementById("result-list");
+            list.innerHTML = "";
+            
+            data.results.forEach(item => {
+                let cls = "st-err";
+                let text = item.status;
+                if (item.status === "Siap OTP") { cls = "st-siap"; text = "Siap (Klik Kirim)"; }
+                else if (item.status === "Cooldown") { cls = "st-cd"; text = formatCD(item.cd); }
+
+                list.innerHTML += `
+                    <div class="box-row">
+                        <span>${item.phone}</span>
+                        <span class="status-tag ${cls}" onclick="kirimOtp('${item.phone}')">${text}</span>
+                    </div>
+                `;
+            });
+        } catch (e) {
+            alert("Error koneksi ke server.");
+        } finally {
+            btn.innerText = "Cek 10 Nomor Sekaligus";
+            btn.disabled = false;
+        }
+    }
+
+    async function kirimOtp(phone) {
+        // Fungsi ini nembak API buat nandain OTP udah dikirim & mulai cooldown
+        if(!confirm("Kirim OTP ke " + phone + "?")) return;
+        
+        await fetch("/api/send_otp", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({phone: phone})
+        });
+        alert("OTP Terkirim! Nomor masuk cooldown.");
+        scan(); // Refresh list
+    }
+</script>
 </body>
 </html>
